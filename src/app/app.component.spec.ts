@@ -1,29 +1,40 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { Component } from '@angular/core';
+import { EmployeeDbService } from './employee-db.service';
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
-  });
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [],
+  templateUrl: './app.component.html',
+})
+export class AppComponent {
+  firstName = '';
+  lastName = '';
+  position = '';
+  employees: any[] = [];
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+  constructor(private employeeService: EmployeeDbService) {}
 
-  it(`should have the 'address-book' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('address-book');
-  });
+  // Add an employee
+  addEmployee() {
+    const employee = {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      position: this.position
+    };
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, address-book');
-  });
-});
+    this.employeeService.addEmployee(employee).then(() => {
+      console.log('Employee added successfully!');
+      this.firstName = '';
+      this.lastName = '';
+      this.position = '';
+    });
+  }
+
+  // Fetch the employee list
+  getEmployees() {
+    this.employeeService.getEmployees().subscribe((data) => {
+      this.employees = data;
+    });
+  }
+}
